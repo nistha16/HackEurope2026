@@ -1,9 +1,11 @@
 fastapi
 uvicorn
 scikit-learn
+xgboost
 pandas
 numpy
 httpx
 python-dotenv
 joblib
 pytest
+yfinance
