@@ -10,11 +10,11 @@ const SCORE_CONFIG: Record<
   Score,
   { bg: string; text: string; description: string }
 > = {
-  A: { bg: "bg-green-100",  text: "text-green-800",  description: "Excellent — uses mid-market rate with near-zero markup." },
-  B: { bg: "bg-blue-100",   text: "text-blue-800",   description: "Good — small FX markup under 1.5%." },
-  C: { bg: "bg-yellow-100", text: "text-yellow-800", description: "Fair — moderate FX markup between 1.5% and 3%." },
-  D: { bg: "bg-orange-100", text: "text-orange-800", description: "Poor — high FX markup between 3% and 5%." },
-  F: { bg: "bg-red-100",    text: "text-red-800",    description: "Failing — significant hidden costs, markup over 5%." },
+  A: { bg: "bg-green-100",  text: "text-green-800",  description: "Excellent — uses mid-market rate with near-zero markup (<0.1%)." },
+  B: { bg: "bg-blue-100",   text: "text-blue-800",   description: "Good — small FX markup under 1%." },
+  C: { bg: "bg-yellow-100", text: "text-yellow-800", description: "Fair — moderate FX markup between 1% and 2.5%." },
+  D: { bg: "bg-orange-100", text: "text-orange-800", description: "Poor — high FX markup between 2.5% and 4%." },
+  F: { bg: "bg-red-100",    text: "text-red-800",    description: "Failing — significant hidden costs, markup over 4%." },
 };
 
 type Props = { score: Score; className?: string };
