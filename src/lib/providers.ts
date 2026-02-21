@@ -41,9 +41,10 @@ export function compareProviders(
       const amountAfterFees = amount - flatFee - percentFee;
       const recipientGets = amountAfterFees * providerRate;
 
-      const idealRecipientGets = amount * midMarketRate;
-      const hiddenCost = idealRecipientGets - recipientGets;
       const totalRealCost = totalFee;
+      // hidden_cost is the portion of cost buried in the FX rate markup
+      // (in source currency, same units as all other cost fields)
+      const hiddenCost = fxMarkupCost;
 
       const { transparencyScore } = detectHiddenFees(
         providerRate,
@@ -52,18 +53,20 @@ export function compareProviders(
         flatFee + percentFee
       );
 
+      const r2 = (n: number) => Math.round(n * 100) / 100;
+
       return {
         provider,
         send_amount: amount,
-        flat_fee: flatFee,
-        percent_fee: percentFee,
-        fx_markup_cost: fxMarkupCost,
-        total_fee: totalFee,
+        flat_fee: r2(flatFee),
+        percent_fee: r2(percentFee),
+        fx_markup_cost: r2(fxMarkupCost),
+        total_fee: r2(totalFee),
         exchange_rate: midMarketRate,
-        provider_rate: providerRate,
-        recipient_gets: recipientGets,
-        hidden_cost: hiddenCost,
-        total_real_cost: totalRealCost,
+        provider_rate: Number(providerRate.toFixed(4)),
+        recipient_gets: r2(recipientGets),
+        hidden_cost: r2(hiddenCost),
+        total_real_cost: r2(totalRealCost),
         transparency_score: transparencyScore,
       };
     })
