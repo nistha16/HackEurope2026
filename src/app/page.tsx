@@ -1,4 +1,4 @@
-import { CompareForm } from "@/components/ui/compareForm";
+import { CompareForm } from "@/components/compareForm";
 
 export default function Home() {
   return (
