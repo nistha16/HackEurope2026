@@ -1,8 +1,10 @@
 import os
+import pandas as pd
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import date, timedelta
+from predictor import predict_rate_movement
 
 # Initialize the FastAPI app
 app = FastAPI(
@@ -132,44 +134,83 @@ async def predict_rate(request: PredictionRequest):
     """
     Predict the FX rate for a given currency pair.
 
-    Currently returns deterministic placeholder values that match the
-    response contract expected by the Next.js frontend
-    (see src/app/api/predict/route.ts).
-
-    TODO: Replace with real ML model inference in Sprint 2.
+    Attempts to use the trained ML model first. If models or data 
+    are missing, it safely falls back to deterministic placeholder 
+    values to keep the Next.js frontend functional.
     """
     from_ccy = request.from_currency.upper()
     to_ccy = request.to_currency.upper()
+    
+    # 1. Try ML Prediction First
+    pair_filename = f"{from_ccy}_{to_ccy}"
+    data_path = os.path.join(os.path.dirname(__file__), "data", f"{pair_filename}.csv")
+    
+    try:
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"No historical data CSV found at {data_path}")
+        
+        df = pd.read_csv(data_path)
+        
+        # Call the ML predictor logic
+        ml_result = predict_rate_movement(from_ccy, to_ccy, df)
 
-    base_rate = _mock_rate_for(from_ccy, to_ccy)
+        pred_24h = ml_result["predicted_rate_24h"]
+        pred_72h = ml_result["predicted_rate_72h"]
+        
+        # Interpolate a 3-day chart array for the frontend
+        today = date.today()
+        pred_48h = round((pred_24h + pred_72h) / 2, 4) 
+        
+        predicted_rates = [
+            PredictedRate(date=(today + timedelta(days=1)).isoformat(), rate=pred_24h),
+            PredictedRate(date=(today + timedelta(days=2)).isoformat(), rate=pred_48h),
+            PredictedRate(date=(today + timedelta(days=3)).isoformat(), rate=pred_72h),
+        ]
 
-    # Simulate a slight upward trend for the 24h / 72h predictions
-    predicted_24h = round(base_rate * 1.001, 4)
-    predicted_72h = round(base_rate * 1.003, 4)
-
-    # Build 3-day predicted_rates array (what the frontend charts)
-    today = date.today()
-    predicted_rates = [
-        PredictedRate(
-            date=(today + timedelta(days=d)).isoformat(),
-            rate=round(base_rate * (1 + 0.001 * d), 4),
+        return PredictionMLResponse(
+            from_currency=from_ccy,
+            to_currency=to_ccy,
+            predicted_rate_24h=pred_24h,
+            predicted_rate_72h=pred_72h,
+            confidence=ml_result["confidence_score"],
+            recommendation=ml_result["recommendation"],
+            potential_savings=f"0.00 {to_ccy}",
+            reasoning=ml_result["reasoning"],
+            predicted_rates=predicted_rates,
         )
-        for d in range(1, 4)
-    ]
 
-    return PredictionMLResponse(
-        from_currency=from_ccy,
-        to_currency=to_ccy,
-        predicted_rate_24h=predicted_24h,
-        predicted_rate_72h=predicted_72h,
-        confidence=0.75,
-        recommendation="NEUTRAL",
-        potential_savings=f"0.00 {to_ccy}",
-        reasoning=(
-            f"Placeholder prediction for {from_ccy}/{to_ccy}. "
-            "The ML model is not yet trained — this mock returns a fixed "
-            "rate with a slight upward trend so the frontend can integrate "
-            "without changes."
-        ),
-        predicted_rates=predicted_rates,
-    )
+    except Exception as e:
+        print(f"ML Prediction fallback triggered for {pair_filename}: {e}")
+        
+        # 2. Fallback to Mock Data
+        base_rate = _mock_rate_for(from_ccy, to_ccy)
+
+        # Simulate a slight upward trend for the 24h / 72h predictions
+        predicted_24h = round(base_rate * 1.001, 4)
+        predicted_72h = round(base_rate * 1.003, 4)
+
+        # Build 3-day predicted_rates array (what the frontend charts)
+        today = date.today()
+        predicted_rates = [
+            PredictedRate(
+                date=(today + timedelta(days=d)).isoformat(),
+                rate=round(base_rate * (1 + 0.001 * d), 4),
+            )
+            for d in range(1, 4)
+        ]
+
+        return PredictionMLResponse(
+            from_currency=from_ccy,
+            to_currency=to_ccy,
+            predicted_rate_24h=predicted_24h,
+            predicted_rate_72h=predicted_72h,
+            confidence=0.75,
+            recommendation="NEUTRAL",
+            potential_savings=f"0.00 {to_ccy}",
+            reasoning=(
+                f"Fallback prediction for {from_ccy}/{to_ccy}. "
+                "The ML model is not yet trained or data is missing — this mock "
+                "returns a fixed rate with a slight upward trend."
+            ),
+            predicted_rates=predicted_rates,
+        )
