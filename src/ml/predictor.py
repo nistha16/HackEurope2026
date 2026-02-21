@@ -4,24 +4,44 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
+import sys
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from .features import engineer_features
+
+# Add the parent directory to sys.path so we can import custom modules."""
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from features import engineer_features
 
 # Ensure models directory exists
 MODEL_DIR = os.path.join(os.path.dirname(__file__), 'models')
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+# Updated to match the new advanced features from features.py
 FEATURE_COLS = [
-    'rate_1d_ago', 'rate_7d_avg', 'rate_30d_avg', 'rate_7d_volatility',
-    'rate_momentum', 'day_of_week', 'day_of_month', 'month',
-    'rate_vs_30d_avg', 'rate_vs_90d_avg'
+    'log_return',
+    'rate_7d_sma', 'rate_14d_sma', 'rate_30d_sma',
+    'rate_7d_ema', 'rate_14d_ema', 'rate_30d_ema',
+    'return_7d_std', 'return_14d_std', 'return_30d_std',
+    'macd', 'macd_signal', 'rsi_14d',
+    'bb_upper', 'bb_lower', 'bb_width',
+    'day_of_week', 'is_month_end', 'is_month_start',
+    'dist_from_30d_sma'
 ]
 
 def train_and_evaluate(csv_path: str, pair_name: str):
     """Loads historical CSV, engineers features, trains the RF models, and saves them."""
     df = pd.read_csv(csv_path)
+    
+    # Filter for the specific currency pair before engineering features
+    if 'from_currency' in df.columns and 'to_currency' in df.columns:
+        from_curr, to_curr = pair_name.split('_')
+        df = df[(df['from_currency'] == from_curr) & (df['to_currency'] == to_curr)].copy()
+        
+    if df.empty:
+        raise ValueError(f"No historical data found for {pair_name} in {csv_path}")
+        
     df = engineer_features(df)
     
     X = df[FEATURE_COLS]
