@@ -53,7 +53,7 @@ export function compareProviders(
         flatFee + percentFee
       );
 
-      const r2 = (n: number) => Math.round(n * 100) / 100;
+      const r2 = (n: number) => (Number.isFinite(n) ? Math.round(n * 100) / 100 : 0);
 
       return {
         provider,

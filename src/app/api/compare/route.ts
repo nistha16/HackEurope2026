@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     };
 
+    // 5-min cache: FX rates won't reflect intra-window changes.
+    // Acceptable trade-off — remittance users compare once, not HFT.
     return NextResponse.json(response, {
       headers: {
         "Cache-Control": "public, max-age=300, s-maxage=300",
