@@ -1,7 +1,15 @@
 import providersData from "@/data/providers.json";
-import type { Provider, ComparisonResult } from "@/types";
+import { CURRENCIES, type Provider, type ComparisonResult } from "@/types";
+
+const ALL_CURRENCY_CODES = CURRENCIES.map((c) => c.code);
 
 const providers: Provider[] = providersData as Provider[];
+
+function supportsCurrency(provider: Provider, currency: string): boolean {
+  return provider.currencies.includes("*")
+    ? ALL_CURRENCY_CODES.includes(currency)
+    : provider.currencies.includes(currency);
+}
 
 export function getProviders(): Provider[] {
   return providers;
@@ -13,12 +21,11 @@ export function compareProviders(
   targetCurrency: string,
   midMarketRate: number
 ): ComparisonResult[] {
-  const corridor = `${sourceCurrency}-${targetCurrency}`;
-
   const results: ComparisonResult[] = providers
     .filter((provider) => {
       return (
-        provider.supported_corridors.includes(corridor) &&
+        supportsCurrency(provider, sourceCurrency) &&
+        supportsCurrency(provider, targetCurrency) &&
         amount >= provider.min_amount &&
         amount <= provider.max_amount
       );

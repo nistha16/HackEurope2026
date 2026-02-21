@@ -8,7 +8,7 @@ export interface Provider {
   speed_hours: number;
   min_amount: number;
   max_amount: number;
-  supported_corridors: string[];
+  currencies: string[];
   transparency_score: "A" | "B" | "C" | "D" | "F";
   website_url: string;
 }

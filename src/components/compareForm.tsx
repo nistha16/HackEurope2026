@@ -49,7 +49,14 @@ export function CompareForm() {
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Compare request failed");
+        let message = "Compare request failed";
+        try {
+          const json = JSON.parse(text);
+          if (json.error) message = json.error;
+        } catch {
+          if (text) message = text;
+        }
+        throw new Error(message);
       }
 
       const data = await res.json();
