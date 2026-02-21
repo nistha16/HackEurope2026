@@ -11,52 +11,64 @@ from main import app
 # Create a TestClient instance using our FastAPI app
 client = TestClient(app)
 
+
 def test_health_check():
-    """
-    Test the GET /health endpoint.
-    Verifies it returns a 200 status code and the correct JSON response.
-    """
+    """GET /health returns 200 and {"status": "ok"}."""
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
+
 def test_predict_rate_success():
-    """
-    Test the POST /predict endpoint with a valid payload.
-    Verifies it returns a 200 status code and the correct response schema.
-    """
+    """POST /predict with valid payload returns 200 and correct schema."""
     payload = {
         "from_currency": "EUR",
         "to_currency": "MAD"
     }
-    
     response = client.post("/predict", json=payload)
-    
     assert response.status_code == 200
     data = response.json()
-    
-    # Check if the returned data matches the expected schema
     assert data["from_currency"] == "EUR"
     assert data["to_currency"] == "MAD"
     assert "predicted_rate" in data
     assert isinstance(data["predicted_rate"], float)
     assert data["status"] == "success"
 
-def test_predict_rate_invalid_payload():
-    """
-    Test the POST /predict endpoint with an invalid payload.
-    Verifies it returns a 422 Unprocessable Entity error (Pydantic validation).
-    """
-    payload = {
-        "from_currency": "EUR"
-        # Missing 'to_currency'
-    }
-    
+
+def test_predict_rate_lowercase_input():
+    """POST /predict normalises currency codes to uppercase."""
+    payload = {"from_currency": "eur", "to_currency": "usd"}
     response = client.post("/predict", json=payload)
-    
-    # FastAPI automatically handles validation errors with a 422 status
+    assert response.status_code == 200
+    data = response.json()
+    assert data["from_currency"] == "EUR"
+    assert data["to_currency"] == "USD"
+
+
+def test_predict_rate_invalid_payload():
+    """POST /predict with missing fields returns 422."""
+    payload = {"from_currency": "EUR"}  # Missing 'to_currency'
+    response = client.post("/predict", json=payload)
     assert response.status_code == 422
 
+
+def test_predict_rate_empty_body():
+    """POST /predict with empty body returns 422."""
+    response = client.post("/predict", json={})
+    assert response.status_code == 422
+
+
+def test_cors_headers():
+    """CORS headers are set for allowed origin."""
+    response = client.options(
+        "/health",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:3000"
+
+
 if __name__ == "__main__":
-    # Run pytest on this file if executed directly
     pytest.main(["-v", __file__])
