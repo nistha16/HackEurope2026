@@ -9,10 +9,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { image } = body as { image: string };
 
-    if (!image) {
+    if (!image || typeof image !== "string") {
       return NextResponse.json(
         { error: "image (base64 string) is required" },
         { status: 400 }
+      );
+    }
+
+    // ~10MB base64 limit (base64 inflates ~33%, so this covers ~7.5MB images)
+    const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+    if (image.length > MAX_IMAGE_SIZE) {
+      return NextResponse.json(
+        { error: "Image too large. Maximum size is ~7.5MB." },
+        { status: 413 }
       );
     }
 

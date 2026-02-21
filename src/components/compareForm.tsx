@@ -97,14 +97,14 @@ export function CompareForm() {
             </div>
 
             <div className="relative">
-              <div className="absolute inset-y-0 left-4 flex items-center text-muted-foreground font-semibold">
+              <div className="absolute top-0 left-4 h-14 flex items-center text-lg sm:text-xl text-muted-foreground font-semibold pointer-events-none">
                 {source}
               </div>
 
               <Input
                 inputMode="decimal"
                 pattern="^[0-9]*[.,]?[0-9]*$"
-                className="h-14 rounded-2xl pl-12 text-lg sm:text-xl font-semibold"
+                className="h-14 rounded-2xl pl-16 text-lg sm:text-xl font-semibold"
                 value={amount}
                 onChange={(e) => {
                   // allow only numbers + dot/comma

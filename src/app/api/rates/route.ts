@@ -15,21 +15,6 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Validate currency codes
-  if (!SUPPORTED_CURRENCIES.has(from)) {
-    return NextResponse.json(
-      { error: `Unsupported currency: ${from}. Frankfurter only supports ECB reference currencies.` },
-      { status: 400 }
-    );
-  }
-
-  if (!SUPPORTED_CURRENCIES.has(to)) {
-    return NextResponse.json(
-      { error: `Unsupported currency: ${to}. Frankfurter only supports ECB reference currencies.` },
-      { status: 400 }
-    );
-  }
-
   if (from === to) {
     return NextResponse.json(
       { error: "Source and target currencies must be different." },
@@ -39,7 +24,21 @@ export async function GET(request: NextRequest) {
 
   try {
     // If history param is provided, return historical rates
+    // Historical rates only available for ECB currencies (Frankfurter)
     if (history) {
+      if (!SUPPORTED_CURRENCIES.has(from)) {
+        return NextResponse.json(
+          { error: `Historical rates unavailable for ${from}. Only ECB currencies supported for history.` },
+          { status: 400 }
+        );
+      }
+      if (!SUPPORTED_CURRENCIES.has(to)) {
+        return NextResponse.json(
+          { error: `Historical rates unavailable for ${to}. Only ECB currencies supported for history.` },
+          { status: 400 }
+        );
+      }
+
       const days = parseInt(history, 10);
       if (isNaN(days) || days < 1 || days > 365) {
         return NextResponse.json(
