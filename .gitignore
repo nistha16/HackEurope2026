@@ -46,7 +46,12 @@ yarn-error.log*
 next-env.d.ts
 
 # cache
-*cache*
+pycache/
+*.pyc
+.pytest_cache/
 
 # env
 *pyenv*
+
+# data
+*.csv
