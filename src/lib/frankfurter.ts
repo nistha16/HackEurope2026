@@ -1,4 +1,11 @@
-const BASE_URL = "https://api.frankfurter.dev";
+const BASE_URL = "https://api.frankfurter.dev/v1";
+
+// Currencies supported by the Frankfurter API (ECB reference rates)
+export const SUPPORTED_CURRENCIES = new Set([
+  "AUD", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK", "EUR", "GBP", "HKD",
+  "HUF", "IDR", "ILS", "INR", "ISK", "JPY", "KRW", "MXN", "MYR", "NOK",
+  "NZD", "PHP", "PLN", "RON", "SEK", "SGD", "THB", "TRY", "USD", "ZAR",
+]);
 
 interface FrankfurterLatestResponse {
   amount: number;
