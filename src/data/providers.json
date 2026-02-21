@@ -9,7 +9,8 @@
     "speed_hours": 24,
     "min_amount": 1,
     "max_amount": 1000000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES", "USD-BRL"],
+    "source_currencies": ["EUR", "GBP", "USD", "CAD", "AUD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES", "BRL", "USD", "EUR", "GBP", "TRY", "ZAR", "JPY", "CNY"],
     "transparency_score": "A",
     "website_url": "https://wise.com"
   },
@@ -23,7 +24,8 @@
     "speed_hours": 4,
     "min_amount": 1,
     "max_amount": 50000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP"],
+    "source_currencies": ["EUR", "GBP", "USD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "USD", "EUR", "GBP", "TRY"],
     "transparency_score": "A",
     "website_url": "https://revolut.com"
   },
@@ -37,7 +39,8 @@
     "speed_hours": 0,
     "min_amount": 1,
     "max_amount": 7500,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES", "USD-BRL"],
+    "source_currencies": ["EUR", "GBP", "USD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES", "BRL", "TRY", "ZAR"],
     "transparency_score": "D",
     "website_url": "https://westernunion.com"
   },
@@ -51,7 +54,8 @@
     "speed_hours": 4,
     "min_amount": 1,
     "max_amount": 10000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN"],
+    "source_currencies": ["EUR", "GBP", "USD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP"],
     "transparency_score": "B",
     "website_url": "https://remitly.com"
   },
@@ -65,7 +69,8 @@
     "speed_hours": 48,
     "min_amount": 1,
     "max_amount": 60000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES", "USD-BRL"],
+    "source_currencies": ["EUR", "GBP", "USD", "CAD", "AUD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES", "BRL", "USD", "EUR", "GBP", "TRY", "ZAR", "JPY", "CNY"],
     "transparency_score": "F",
     "website_url": "https://paypal.com"
   },
@@ -79,7 +84,8 @@
     "speed_hours": 72,
     "min_amount": 1,
     "max_amount": 100000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES", "USD-BRL"],
+    "source_currencies": ["EUR", "GBP", "USD", "CAD", "AUD", "JPY", "CNY"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES", "BRL", "USD", "EUR", "GBP", "TRY", "ZAR", "JPY", "CNY"],
     "transparency_score": "F",
     "website_url": "#"
   },
@@ -93,7 +99,8 @@
     "speed_hours": 2,
     "min_amount": 1,
     "max_amount": 8000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES"],
+    "source_currencies": ["EUR", "GBP", "USD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES"],
     "transparency_score": "B",
     "website_url": "https://worldremit.com"
   },
@@ -107,7 +114,8 @@
     "speed_hours": 24,
     "min_amount": 1,
     "max_amount": 500000,
-    "supported_corridors": ["EUR-MAD", "EUR-USD", "GBP-INR", "USD-PHP", "EUR-NGN", "GBP-PKR", "EUR-BDT", "USD-MXN", "EUR-EGP", "GBP-GHS", "EUR-KES", "USD-BRL"],
+    "source_currencies": ["EUR", "GBP", "USD", "CAD", "AUD"],
+    "target_currencies": ["MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES", "BRL", "USD", "EUR", "GBP", "TRY", "ZAR", "JPY", "CNY"],
     "transparency_score": "B",
     "website_url": "https://xe.com"
   }
