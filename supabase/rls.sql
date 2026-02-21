@@ -43,4 +43,7 @@ create policy "scanned_receipts: select own" on scanned_receipts
 create policy "scanned_receipts: insert own" on scanned_receipts
   for insert with check (auth.uid() = user_id);
 
--- providers table is public read (no RLS needed — it's reference data)
+-- providers: public read-only (anyone can read, nobody can write via anon key)
+alter table providers enable row level security;
+create policy "providers: public read" on providers
+  for select using (true);

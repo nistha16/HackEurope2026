@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 // Browser client — uses anon key, respects RLS.
 // Safe to use in client components. Singleton to avoid multiple instances.
@@ -17,8 +16,11 @@ export function getSupabaseBrowserClient() {
 
 // Server client — uses service role key, bypasses RLS.
 // Only use in API routes / server actions. Never expose to the browser.
+// Key is read lazily so client components importing this file don't
+// attempt to access SUPABASE_SERVICE_ROLE_KEY (undefined in browser).
 export function getSupabaseServerClient() {
-  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false },
   });
 }
