@@ -13,12 +13,11 @@ export function compareProviders(
   targetCurrency: string,
   midMarketRate: number
 ): ComparisonResult[] {
-  const corridor = `${sourceCurrency}-${targetCurrency}`;
-
   const results: ComparisonResult[] = providers
     .filter((provider) => {
       return (
-        provider.supported_corridors.includes(corridor) &&
+        provider.source_currencies.includes(sourceCurrency) &&
+        provider.target_currencies.includes(targetCurrency) &&
         amount >= provider.min_amount &&
         amount <= provider.max_amount
       );
