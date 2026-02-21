@@ -44,3 +44,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# cache
+pycache/
+*.pyc
+.pytest_cache/
+
+# env
+*pyenv*
+
+# data
+*.csv
