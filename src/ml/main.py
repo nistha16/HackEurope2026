@@ -55,7 +55,7 @@ class PredictionMLResponse(BaseModel):
 
     See src/app/api/predict/route.ts — the route handler reads these keys
     from the ML JSON and merges them into the PredictionResponse sent to the
-    browser.  current_rate and historical_rates come from Frankfurter, so the
+    browser.  current_rate and historical_rates come from Frankfurter or Open exchange rates, so the
     ML service does NOT need to return them.
     """
 
