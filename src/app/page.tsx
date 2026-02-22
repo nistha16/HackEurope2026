@@ -15,7 +15,6 @@ import {
   DollarSign,
   Users,
   BadgePercent,
-  Mic,
 } from "lucide-react";
 
 /* ─── Data ─── */
@@ -37,7 +36,7 @@ const STEPS = [
     icon: TrendingUp,
     title: "Send at the right time",
     description:
-      "Our ML model trained on 25 years of ECB data tells you if waiting a day could save you money.",
+      "Our ensemble ML model (Logistic Regression + XGBoost) blends 6 technical indicators with a 60-day rate percentile to score today's rate — so you know if now is a good time to send.",
   },
 ];
 
@@ -82,17 +81,10 @@ const FEATURES = [
   },
   {
     icon: TrendingUp,
-    title: "Send Now or Wait?",
+    title: "Rate Timing Score",
     description:
-      "ML predictions trained on 25 years of ECB data. Know if waiting a day could save you money.",
+      "An ensemble of Logistic Regression + XGBoost scores today's rate on a 0–100% scale using 6 technical indicators and 60-day history. Get a clear SEND NOW, NEUTRAL, or WAIT signal.",
     href: "/predict",
-  },
-  {
-    icon: Mic,
-    title: "Voice Assistant",
-    description:
-      "Ask in plain language: \"Send 500 euros to Morocco.\" Get the best option read back to you.",
-    href: "/voice",
   },
 ];
 

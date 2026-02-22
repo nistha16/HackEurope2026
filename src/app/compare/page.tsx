@@ -5,7 +5,7 @@ import { CompareForm } from "@/components/compareForm";
 import { ProviderRanking } from "@/components/ProviderRanking";
 import { Button } from "@/components/ui/button";
 import type { ComparisonResponse } from "@/types";
-import { Check, Copy, Info } from "lucide-react";
+import { Check, Copy, FileText, Info, Loader2 } from "lucide-react";
 
 // Skeleton cards shown while fetching
 function ResultsSkeleton() {
@@ -35,6 +35,7 @@ export default function ComparePage() {
   const [result, setResult] = React.useState<ComparisonResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
+  const [reportLoading, setReportLoading] = React.useState(false);
 
   // Compare page always starts fresh — no auto-restore from localStorage
 
@@ -44,6 +45,25 @@ export default function ComparePage() {
     window.setTimeout(() => {
       document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
     }, 50);
+  }
+
+  async function handleGetReport() {
+    if (!result) return;
+    setReportLoading(true);
+    try {
+      localStorage.setItem("reportData", JSON.stringify(result));
+      const res = await fetch("/api/stripe/payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "report" }),
+      });
+      const data = await res.json() as { url?: string; error?: string };
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      setReportLoading(false);
+    }
   }
 
   async function handleShare() {
@@ -142,6 +162,35 @@ export default function ComparePage() {
                 targetCurrency={result.target_currency}
                 potentialSavings={result.potential_savings}
               />
+
+              {/* Detailed Report CTA */}
+              <div className="max-w-2xl mx-auto rounded-2xl border border-violet-200 bg-violet-50 p-5">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-violet-900 text-sm">
+                      Get your Detailed Transfer Report
+                    </p>
+                    <p className="mt-0.5 text-xs text-violet-700">
+                      Full provider breakdown · Claude AI analysis · Hidden fee audit · Personalised recommendation
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleGetReport}
+                    disabled={reportLoading}
+                    className="shrink-0 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm gap-1.5"
+                    size="sm"
+                  >
+                    {reportLoading ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <>€0.99 — Get Report</>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : null}
         </div>

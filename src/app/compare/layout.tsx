@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import { NavUser } from "@/components/NavUser";
 
 export default function CompareLayout({
   children,
@@ -26,6 +27,13 @@ export default function CompareLayout({
             >
               Predict
             </Link>
+            <Link
+              href="/subscribe"
+              className="rounded-full bg-emerald-600 text-white px-3 py-1 text-xs font-medium hover:bg-emerald-700 transition-colors"
+            >
+              Premium
+            </Link>
+            <NavUser />
           </div>
         </div>
       </nav>

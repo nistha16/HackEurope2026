@@ -40,6 +40,38 @@ export async function createPaymentIntent(
   }
 }
 
+export async function createReportCheckoutSession(): Promise<Stripe.Checkout.Session> {
+  try {
+    const session = await getStripe().checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: 99, // €0.99
+            product_data: {
+              name: "Detailed Transfer Report",
+              description:
+                "Full provider breakdown with Claude AI analysis and personalized recommendation.",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/report?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/compare`,
+      metadata: { type: "report" },
+    });
+    return session;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Stripe Report Checkout error: ${error.message}`);
+    }
+    throw new Error("Stripe Report Checkout error: Unknown error");
+  }
+}
+
 export async function createCheckoutSession(
   priceId: string,
   customerId?: string
