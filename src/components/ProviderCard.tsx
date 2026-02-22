@@ -16,6 +16,30 @@ type Props = {
   isFastest?: boolean;
 };
 
+function ProviderLogo({ name, websiteUrl }: { name: string; websiteUrl: string }) {
+  const domain = new URL(websiteUrl).hostname.replace("www.", "");
+  const src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  const [failed, setFailed] = React.useState(false);
+
+  if (failed) {
+    return (
+      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+        {name.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={name}
+      className="h-8 w-8 rounded-full object-contain shrink-0 bg-white border border-gray-100 p-0.5"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function formatSpeed(hours: number): string {
   if (hours < 1) return "⚡ Instant";
   if (hours <= 2) return `⚡ ${hours}h`;
@@ -78,18 +102,7 @@ export function ProviderCard({
       <div className="flex items-center justify-between gap-4">
         {/* Provider info */}
         <div className="flex items-center gap-3 min-w-0">
-          {provider.logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={provider.logo_url}
-              alt={provider.name}
-              className="h-8 w-8 rounded-full object-contain shrink-0"
-            />
-          ) : (
-            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
-              {provider.name.charAt(0)}
-            </div>
-          )}
+          <ProviderLogo name={provider.name} websiteUrl={provider.website_url} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-semibold text-gray-900 truncate">{provider.name}</p>
