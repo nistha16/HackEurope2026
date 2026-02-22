@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { RateAlert } from "@/types";
 
-// In-memory storage for rate alerts
+// In-memory storage for rate alerts (capped to prevent OOM)
+const MAX_ALERTS = 100;
 const alerts: RateAlert[] = [];
 
 export async function GET() {
@@ -42,6 +43,13 @@ export async function POST(request: NextRequest) {
       is_active: true,
       created_at: new Date().toISOString(),
     };
+
+    if (alerts.length >= MAX_ALERTS) {
+      return NextResponse.json(
+        { error: `Alert limit reached (${MAX_ALERTS}). Delete an existing alert first.` },
+        { status: 429 }
+      );
+    }
 
     alerts.push(newAlert);
 

@@ -5,10 +5,9 @@ export interface Provider {
   fee_flat: number;
   fee_percent: number;
   fx_markup_percent: number;
-  speed_hours: number;
   min_amount: number;
   max_amount: number;
-  supported_corridors: string[];
+  currencies: string[];
   transparency_score: "A" | "B" | "C" | "D" | "F";
   website_url: string;
 }

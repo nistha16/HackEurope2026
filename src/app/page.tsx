@@ -1,65 +1,247 @@
-import Image from "next/image";
+import { CompareForm } from "@/components/compareForm";
+import {
+  ArrowRight,
+  Search,
+  ShieldCheck,
+  TrendingUp,
+  Globe,
+  DollarSign,
+  Users,
+  BadgePercent,
+} from "lucide-react";
+
+const STEPS = [
+  {
+    icon: Search,
+    title: "Enter your transfer",
+    description:
+      "Choose currencies and amount. We support 20+ currencies across 6 continents.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "See every hidden fee",
+    description:
+      "We compare the real cost - not the advertised one. FX markups, flat fees, everything exposed.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Send at the right time",
+    description:
+      "Our ML model trained on 25 years of ECB data tells you if waiting a day could save you money.",
+  },
+];
+
+const STATS = [
+  {
+    icon: DollarSign,
+    value: "$905B",
+    label: "Sent home globally",
+    sublabel: "World Bank, 2024",
+  },
+  {
+    icon: Users,
+    value: "281M",
+    label: "Migrants worldwide",
+    sublabel: "IOM, 2020 est.",
+  },
+  {
+    icon: BadgePercent,
+    value: "6.49%",
+    label: "Average transfer cost",
+    sublabel: "World Bank RPW, 2024",
+  },
+  {
+    icon: Globe,
+    value: "8",
+    label: "Providers compared",
+    sublabel: "Real-time rates",
+  },
+];
+
+const PROVIDERS = [
+  { name: "Wise", score: "A" },
+  { name: "Revolut", score: "A" },
+  { name: "XE", score: "B" },
+  { name: "Remitly", score: "B" },
+  { name: "WorldRemit", score: "B" },
+  { name: "Western Union", score: "D" },
+  { name: "PayPal", score: "F" },
+  { name: "Your Bank", score: "F" },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+    <main className="min-h-screen bg-zinc-50">
+      {/* ───────── Nav ───────── */}
+      <nav className="w-full border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
+          <span className="text-lg font-bold tracking-tight">
+            Fibre<span className="text-emerald-600">Transfer</span>
+          </span>
+          <div className="flex items-center gap-4 text-sm">
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="/compare"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
+              Compare
+            </a>
             <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="/predict"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Learning
-            </a>{" "}
-            center.
+              Predict
+            </a>
+            <a
+              href="/scan"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Scan Receipt
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* ───────── Hero ───────── */}
+      <section className="relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-50/60 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-emerald-100/30 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-6xl mx-auto px-6 pt-16 pb-10 sm:pt-24 sm:pb-16">
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-medium mb-5">
+              <Globe className="h-3.5 w-3.5" />
+              Powered by World Bank &amp; ECB data
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-zinc-900 leading-tight">
+              Stop overpaying to{" "}
+              <span className="text-emerald-600">send money home</span>
+            </h1>
+
+            <p className="mt-4 text-base sm:text-lg text-zinc-500 max-w-xl mx-auto leading-relaxed">
+              Compare every transfer provider in seconds. See the fees they
+              hide. Know exactly when to send.
+            </p>
+          </div>
+
+          {/* The form */}
+          <CompareForm />
+
+          {/* Quick provider tags */}
+          <div className="mt-8 flex flex-wrap justify-center gap-2">
+            {PROVIDERS.map((p) => (
+              <span
+                key={p.name}
+                className="inline-flex items-center gap-1.5 rounded-full border bg-white px-3 py-1 text-xs text-zinc-500"
+              >
+                {p.name}
+                <span
+                  className={`font-bold ${
+                    p.score === "A"
+                      ? "text-emerald-600"
+                      : p.score === "B"
+                        ? "text-blue-600"
+                        : p.score === "D"
+                          ? "text-orange-500"
+                          : "text-red-500"
+                  }`}
+                >
+                  {p.score}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── Stats ───────── */}
+      <section className="border-y bg-white">
+        <div className="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {STATS.map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 mb-3">
+                  <s.icon className="h-5 w-5" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-zinc-900">
+                  {s.value}
+                </div>
+                <div className="text-sm text-zinc-600 mt-1">{s.label}</div>
+                <div className="text-xs text-zinc-400 mt-0.5">
+                  {s.sublabel}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── How It Works ───────── */}
+      <section className="max-w-6xl mx-auto px-6 py-16 sm:py-24">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-zinc-900">
+            How it works
+          </h2>
+          <p className="text-zinc-500 mt-2">Three steps. Under 10 seconds.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          {STEPS.map((step, i) => (
+            <div key={step.title} className="relative group">
+              <div className="rounded-2xl border bg-white p-6 h-full transition-shadow hover:shadow-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 font-bold text-sm">
+                    {i + 1}
+                  </div>
+                  <step.icon className="h-5 w-5 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-zinc-900 text-lg mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+              {/* Arrow connector (hidden on mobile, hidden on last) */}
+              {i < STEPS.length - 1 && (
+                <div className="hidden sm:flex absolute top-1/2 -right-5 -translate-y-1/2 text-zinc-300">
+                  <ArrowRight className="h-5 w-5" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ───────── CTA ───────── */}
+      <section className="bg-zinc-900 text-white">
+        <div className="max-w-6xl mx-auto px-6 py-16 sm:py-20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold">
+            Your family deserves every cent
+          </h2>
+          <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
+            $905 billion was sent home globally in 2024. On average, 6.49%
+            disappears in fees. FibreTransfer shows you how to keep more.
           </p>
+
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* ───────── Footer ───────── */}
+      <footer className="border-t bg-white">
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-400">
+          <span>
+            Fibre<span className="text-emerald-600 font-semibold">Transfer</span>{" "}
+            - HackEurope 2026
+          </span>
+          <span>
+            Data from{" "}
+            <span className="text-zinc-600">European Central Bank</span> &amp;{" "}
+            <span className="text-zinc-600">World Bank RPW</span>
+          </span>
         </div>
-      </main>
-    </div>
+      </footer>
+    </main>
   );
 }
