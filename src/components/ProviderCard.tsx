@@ -13,15 +13,30 @@ type Props = {
   sourceCurrency: string;
   targetCurrency: string;
   isBestValue?: boolean;
-  isFastest?: boolean;
 };
 
-function formatSpeed(hours: number): string {
-  if (hours < 1) return "⚡ Instant";
-  if (hours <= 2) return `⚡ ${hours}h`;
-  if (hours <= 24) return `🕐 ${hours}h`;
-  const days = Math.round(hours / 24);
-  return `🐢 ${days} day${days > 1 ? "s" : ""}`;
+function ProviderLogo({ name, websiteUrl }: { name: string; websiteUrl: string }) {
+  const domain = new URL(websiteUrl).hostname.replace("www.", "");
+  const src = `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  const [failed, setFailed] = React.useState(false);
+
+  if (failed) {
+    return (
+      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
+        {name.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={name}
+      className="h-8 w-8 rounded-full object-contain shrink-0 bg-white border border-gray-100 p-0.5"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 function FeeRow({
@@ -46,7 +61,6 @@ export function ProviderCard({
   sourceCurrency,
   targetCurrency,
   isBestValue,
-  isFastest,
 }: Props) {
   const [expanded, setExpanded] = React.useState(false);
   const { provider } = result;
@@ -58,19 +72,12 @@ export function ProviderCard({
         isBestValue && "border-green-400 ring-1 ring-green-400"
       )}
     >
-      {/* Badges */}
-      {(isBestValue || isFastest) && (
+      {/* Best Value badge */}
+      {isBestValue && (
         <div className="flex gap-2 mb-3">
-          {isBestValue && (
-            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-              Best Value
-            </span>
-          )}
-          {isFastest && (
-            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-              Fastest
-            </span>
-          )}
+          <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+            Best Value
+          </span>
         </div>
       )}
 
@@ -78,24 +85,12 @@ export function ProviderCard({
       <div className="flex items-center justify-between gap-4">
         {/* Provider info */}
         <div className="flex items-center gap-3 min-w-0">
-          {provider.logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={provider.logo_url}
-              alt={provider.name}
-              className="h-8 w-8 rounded-full object-contain shrink-0"
-            />
-          ) : (
-            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
-              {provider.name.charAt(0)}
-            </div>
-          )}
+          <ProviderLogo name={provider.name} websiteUrl={provider.website_url} />
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <p className="font-semibold text-gray-900 truncate">{provider.name}</p>
               <TransparencyScore score={result.transparency_score} />
             </div>
-            <p className="text-xs text-muted-foreground">{formatSpeed(provider.speed_hours)}</p>
           </div>
         </div>
 
@@ -119,7 +114,7 @@ export function ProviderCard({
         <span>Rate: {result.provider_rate.toFixed(4)}</span>
       </div>
 
-      {/* Hidden fee alert — self-guards when hiddenCost is 0 */}
+      {/* Hidden fee alert */}
       <HiddenFeeAlert
         hiddenCost={result.hidden_cost}
         markupPercent={provider.fx_markup_percent}

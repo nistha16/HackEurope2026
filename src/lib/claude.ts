@@ -25,7 +25,6 @@ export async function explainComparison(
           `   - Hidden cost: ${r.hidden_cost.toFixed(2)} ${targetCurrency}`,
           `   - Total real cost: ${r.total_real_cost.toFixed(2)} ${sourceCurrency}`,
           `   - Transparency score: ${r.transparency_score}`,
-          `   - Speed: ${r.provider.speed_hours}h`,
         ].join("\n");
       })
       .join("\n\n");

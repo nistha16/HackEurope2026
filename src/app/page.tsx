@@ -21,7 +21,7 @@ const STEPS = [
     icon: ShieldCheck,
     title: "See every hidden fee",
     description:
-      "We compare the real cost — not the advertised one. FX markups, flat fees, everything exposed.",
+      "We compare the real cost - not the advertised one. FX markups, flat fees, everything exposed.",
   },
   {
     icon: TrendingUp,
@@ -34,21 +34,21 @@ const STEPS = [
 const STATS = [
   {
     icon: DollarSign,
-    value: "$59B",
-    label: "Lost to fees yearly",
+    value: "$905B",
+    label: "Sent home globally",
     sublabel: "World Bank, 2024",
   },
   {
     icon: Users,
     value: "281M",
     label: "Migrants worldwide",
-    sublabel: "UN Migration Report",
+    sublabel: "IOM, 2020 est.",
   },
   {
     icon: BadgePercent,
     value: "6.49%",
     label: "Average transfer cost",
-    sublabel: "vs 3% UN target",
+    sublabel: "World Bank RPW, 2024",
   },
   {
     icon: Globe,
@@ -76,7 +76,7 @@ export default function Home() {
       <nav className="w-full border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
           <span className="text-lg font-bold tracking-tight">
-            Send<span className="text-emerald-600">Smart</span>
+            Fibre<span className="text-emerald-600">Transfer</span>
           </span>
           <div className="flex items-center gap-4 text-sm">
             <a
@@ -221,16 +221,10 @@ export default function Home() {
             Your family deserves every cent
           </h2>
           <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
-            281 million people send money home every year. On average, 6.49%
-            disappears in fees. SendSmart shows you how to keep more.
+            $905 billion was sent home globally in 2024. On average, 6.49%
+            disappears in fees. FibreTransfer shows you how to keep more.
           </p>
-          <a
-            href="/compare"
-            className="inline-flex items-center gap-2 mt-8 bg-emerald-600 hover:bg-emerald-500 transition-colors text-white font-medium rounded-full px-6 py-3 text-sm"
-          >
-            Compare now
-            <ArrowRight className="h-4 w-4" />
-          </a>
+
         </div>
       </section>
 
@@ -238,8 +232,8 @@ export default function Home() {
       <footer className="border-t bg-white">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-400">
           <span>
-            Send<span className="text-emerald-600 font-semibold">Smart</span>{" "}
-            &mdash; HackEurope 2026
+            Fibre<span className="text-emerald-600 font-semibold">Transfer</span>{" "}
+            - HackEurope 2026
           </span>
           <span>
             Data from{" "}
