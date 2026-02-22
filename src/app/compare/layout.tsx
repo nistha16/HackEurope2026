@@ -26,12 +26,6 @@ export default function CompareLayout({
             >
               Predict
             </Link>
-            <Link
-              href="/scan"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Scan Receipt
-            </Link>
           </div>
         </div>
       </nav>

@@ -20,5 +20,5 @@ npm run dev                   # http://localhost:3000
 
 - **Frontend**: Next.js 14 (App Router) + Tailwind CSS + shadcn/ui
 - **ML Service**: Python FastAPI (separate directory: `ml/`)
-- **APIs**: Gemini, ElevenLabs, Stripe, Frankfurter (ECB rates)
+- **APIs**: ElevenLabs, Stripe, Frankfurter (ECB rates)
 - **Data**: World Bank Remittance Prices Worldwide (RPW)

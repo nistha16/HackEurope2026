@@ -15,7 +15,6 @@ import {
 const NAV_LINKS = [
   { href: "/compare", label: "Compare" },
   { href: "/predict", label: "Predict" },
-  { href: "/scan", label: "Scan Receipt" },
 ];
 
 export function Navbar() {
