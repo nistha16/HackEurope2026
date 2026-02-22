@@ -2,13 +2,18 @@
 Global Feature Engineering Module
 =================================
 
-Transforms raw historical FX rates into scale-invariant features.
-Binary classification target: is today's rate >= the average of the next 14 days?
+Philosophy: The model is a learned BACKWARD-LOOKING analyst, not a future
+predictor.  It synthesises range position, momentum, volatility, RSI, MA
+crossovers, and seasonality into a timing score.
 
-Key design choices:
-  - Features are ratios/normalised → corridor-agnostic
-  - Trimmed correlated features (e.g. only one of z_score / bollinger kept)
-  - Sample weights emphasise extreme days where signal is strongest
+The forward target is used only for TRAINING — it teaches the model which
+backward signal combinations historically coincided with genuinely good days.
+The product value is proved by backtesting, not by forward AUC.
+
+Target: "Is today in the top 3 out of the next 10 trading days?"
+  - ~30% positive rate (cleaner than 50/50 above-mean)
+  - Positive class = days that were CLEARLY good timing
+  - Much more learnable than "slightly above the forward mean"
 """
 
 import pandas as pd
@@ -23,11 +28,13 @@ FEATURE_COLS = [
     "momentum_14d", "momentum_30d",
     "rsi_14d",
     "macd_signal",
+    "signal_agreement",
     "sin_dow", "cos_dow", "sin_month", "cos_month",
     "day_of_month_norm",
 ]
 
-FORWARD_WINDOW = 14
+FORWARD_WINDOW = 10
+TOP_K = 3  # "top 3 out of 10" = ~30% positive rate
 
 
 def _compute_rsi(series: pd.Series, period: int = 14) -> pd.Series:
@@ -57,7 +64,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
 
     rate = df["rate"]
 
-    # --- Returns (lagged by 1 day to prevent leakage) ---
+    # --- Returns (lagged) ---
     log_ret = np.log(rate / rate.shift(1))
     df["return_1d_lag"] = log_ret.shift(1).fillna(0)
     df["return_3d_lag"] = (rate / rate.shift(3) - 1).shift(1).fillna(0)
@@ -91,6 +98,23 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df["rsi_14d"] = _compute_rsi(rate, period=14)
     df["macd_signal"] = _compute_macd_signal(rate)
 
+    # -----------------------------------------------------------------
+    # SIGNAL AGREEMENT: how many backward indicators say "good rate"?
+    # This is the key feature — it captures your intuition of
+    # "confidence comes from multiple signals lining up."
+    #
+    # Each sub-signal votes 1 (good) or 0 (bad), then we average.
+    # -----------------------------------------------------------------
+    votes = pd.DataFrame(index=df.index)
+    votes["range_high"]     = (df["range_position_60d"] > 0.5).astype(float)
+    votes["above_10d_ma"]   = (df["rate_vs_10d_avg"] > 1.0).astype(float)
+    votes["above_30d_ma"]   = (df["rate_vs_30d_avg"] > 1.0).astype(float)
+    votes["rsi_bullish"]    = (df["rsi_14d"] > 0.5).astype(float)
+    votes["macd_positive"]  = (df["macd_signal"] > 0).astype(float)
+    votes["momentum_up"]    = (df["momentum_14d"] > 0).astype(float)
+
+    df["signal_agreement"] = votes.mean(axis=1)  # 0..1, 1 = all agree "good"
+
     # --- Temporal ---
     dow = df["date"].dt.dayofweek
     df["sin_dow"] = np.sin(2 * np.pi * dow / 7)
@@ -100,14 +124,34 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df["cos_month"] = np.cos(2 * np.pi * month / 12)
     df["day_of_month_norm"] = df["date"].dt.day / 31.0
 
-    # --- Target: rate >= mean of next 14 days ---
-    forward_avg = rate.shift(-1).rolling(window=FORWARD_WINDOW).mean().shift(-(FORWARD_WINDOW - 1))
-    df["target_send_now"] = (rate >= forward_avg).astype(float)
-    df.loc[df.index[-FORWARD_WINDOW:], "target_send_now"] = np.nan
+    # -----------------------------------------------------------------
+    # TARGET: Is today in the top K of the next N trading days?
+    #
+    # For each day, look at the window [today, +1, +2, ..., +N-1].
+    # If today's rate ranks in the top K of that window → 1 (good day).
+    # Otherwise → 0.
+    #
+    # This is cleaner than "above the forward mean" because:
+    #   - ~30% positive rate (not 50/50 coin-flip noise)
+    #   - Positive class = genuinely good timing (top 3 of 10)
+    #   - The model learns "what does a clearly good day look like?"
+    # -----------------------------------------------------------------
+    rate_values = rate.values
+    n = len(rate_values)
+    target = np.full(n, np.nan)
 
-    # --- Sample weight: upweight extremes where signal is strongest ---
-    pctile = df["range_position_60d"]
-    extremeness = (pctile - 0.5).abs()
-    df["sample_weight"] = 1.0 + 4.0 * extremeness
+    for i in range(n - FORWARD_WINDOW + 1):
+        window = rate_values[i : i + FORWARD_WINDOW]
+        rank_from_top = np.sum(window >= rate_values[i])  # 1=lowest, N=highest
+        target[i] = 1.0 if rank_from_top >= (FORWARD_WINDOW - TOP_K + 1) else 0.0
+
+    df["target_send_now"] = target
+
+    # -----------------------------------------------------------------
+    # SAMPLE WEIGHT: quadratic upweighting of extremes
+    # -----------------------------------------------------------------
+    pctile = df["range_position_60d"].values
+    extremeness = np.abs(pctile - 0.5) * 2
+    df["sample_weight"] = 1.0 + 9.0 * (extremeness ** 2)
 
     return df

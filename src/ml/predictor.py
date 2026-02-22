@@ -2,8 +2,12 @@
 Global Predictor Module
 =======================
 Executes inference using the ensemble model (LogReg + XGBoost).
-Blends model probability with the raw 60-day percentile for robustness.
-Caches historical data in memory at startup for sub-200ms responses.
+Blends model probability with the raw 60-day percentile.
+
+Architecture:
+  - Raw percentile answers "where is today's rate vs recent history?"
+  - Model adds "are backward indicators aligned that this is a good day?"
+  - Signal agreement drives confidence in the recommendation.
 """
 
 import os
@@ -15,8 +19,7 @@ from features import engineer_features, FEATURE_COLS
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
-# Blend: 55% model, 45% raw percentile.
-MODEL_WEIGHT = 0.55
+MODEL_WEIGHT = 0.40
 
 
 class GlobalPredictor:
@@ -38,7 +41,6 @@ class GlobalPredictor:
         return pd.DataFrame()
 
     def get_corridor_data(self, from_ccy: str, to_ccy: str) -> pd.DataFrame:
-        """Filter cached data for a specific corridor."""
         if self._data.empty:
             return pd.DataFrame()
         return self._data[
@@ -54,42 +56,60 @@ class GlobalPredictor:
 
         # 1. Feature Engineering
         eng_df = engineer_features(history_df)
-        latest_row = eng_df.iloc[-1]
+        latest = eng_df.iloc[-1]
 
-        # 2. Model probability (send_now = class 1)
+        # 2. Model probability
         X = eng_df.iloc[-1:][FEATURE_COLS]
         model_prob = float(self.model.predict_proba(X)[0][1])
 
         # 3. Raw percentile
-        raw_percentile = float(latest_row["range_position_60d"])
+        raw_percentile = float(latest["range_position_60d"])
 
         # 4. Blended timing score
         timing_score = MODEL_WEIGHT * model_prob + (1 - MODEL_WEIGHT) * raw_percentile
         timing_score = float(np.clip(timing_score, 0.0, 1.0))
 
-        # 5. Decision Logic
+        # 5. Signal agreement (for reasoning)
+        agreement = float(latest["signal_agreement"])
+
+        # 6. Decision Logic — confidence informed by signal agreement
         if timing_score >= 0.65:
             rec = "SEND_NOW"
-            reason = (
-                f"Great timing — today's rate is better than ~{int(timing_score * 100)}% "
-                f"of expected rates over the next two weeks."
-            )
+            if agreement >= 0.7:
+                reason = (
+                    f"Great timing — today's rate is near the 2-month high and "
+                    f"{int(agreement * 6)}/6 indicators confirm this is a strong day."
+                )
+            else:
+                reason = (
+                    f"Good timing — today's rate is above average, though "
+                    f"not all indicators fully agree ({int(agreement * 6)}/6 positive)."
+                )
         elif timing_score >= 0.40:
             rec = "NEUTRAL"
-            reason = "Decent day. The rate is near its recent average — no strong signal either way."
+            reason = (
+                "Decent day. The rate is near its recent average — "
+                "no strong signal either way."
+            )
         else:
             rec = "WAIT"
-            reason = (
-                "Below-average rate compared to recent weeks. "
-                "Historical patterns suggest a better window may come soon."
-            )
+            if agreement <= 0.3:
+                reason = (
+                    "Below-average rate. Most indicators agree this is a "
+                    "weak day — historical patterns suggest a better window soon."
+                )
+            else:
+                reason = (
+                    "Below-average rate compared to recent weeks. "
+                    "Consider waiting for a better window."
+                )
 
-        # 6. Market Insights
+        # 7. Market Insights
         last_60 = history_df.tail(60)["rate"]
         two_month_avg = float(last_60.mean())
 
         last_avail = history_df.tail(365)["rate"] if len(history_df) >= 365 else last_60
-        trend_direction = "UP" if latest_row["rate"] > last_avail.mean() else "DOWN"
+        trend_direction = "UP" if latest["rate"] > last_avail.mean() else "DOWN"
 
         vol_ratio = last_60.std() / max(two_month_avg, 1e-9)
         if vol_ratio > 0.015:
@@ -117,7 +137,6 @@ _predictor = GlobalPredictor()
 
 
 def score_today(from_currency: str, to_currency: str) -> dict:
-    """Wrapper that fetches corridor data from cache and runs prediction."""
     corridor_df = _predictor.get_corridor_data(from_currency, to_currency)
     if corridor_df.empty:
         raise FileNotFoundError(f"No historical data for {from_currency}/{to_currency}.")
