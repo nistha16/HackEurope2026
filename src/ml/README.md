@@ -3,8 +3,8 @@
 ## Setup
 
 ```bash
-python3 -m venv pyenv-sendsmart-ml
-source pyenv-sendsmart-ml/bin/activate
+python3 -m venv pyenv-fibretransfer-ml
+source pyenv-fibretransfer-ml/bin/activate
 pip install -r requirements.txt
 ```
 
