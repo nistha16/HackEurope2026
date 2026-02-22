@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NavUser } from "@/components/NavUser";
 import {
   Sheet,
   SheetContent,
@@ -38,6 +39,13 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          <Link
+            href="/subscribe"
+            className="rounded-full bg-emerald-600 text-white px-3 py-1 text-xs font-medium hover:bg-emerald-700 transition-colors"
+          >
+            Premium
+          </Link>
+          <NavUser />
         </div>
 
         {/* Mobile hamburger */}
@@ -65,6 +73,16 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/subscribe"
+                onClick={() => setOpen(false)}
+                className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors py-2"
+              >
+                Premium
+              </Link>
+              <div className="pt-2 border-t">
+                <NavUser />
+              </div>
             </div>
           </SheetContent>
         </Sheet>

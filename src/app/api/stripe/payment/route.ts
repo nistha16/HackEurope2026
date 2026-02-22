@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   createPaymentIntent,
   createCheckoutSession,
+  createReportCheckoutSession,
 } from "@/lib/stripe-client";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { type, amount, currency, price_id } = body as {
-      type: "rate_lock" | "subscription";
+      type: "rate_lock" | "subscription" | "report";
       amount?: number;
       currency?: string;
       price_id?: string;
@@ -16,9 +17,14 @@ export async function POST(request: NextRequest) {
 
     if (!type) {
       return NextResponse.json(
-        { error: "type is required (rate_lock or subscription)" },
+        { error: "type is required (rate_lock, subscription, or report)" },
         { status: 400 }
       );
+    }
+
+    if (type === "report") {
+      const session = await createReportCheckoutSession();
+      return NextResponse.json({ url: session.url });
     }
 
     if (type === "rate_lock") {
