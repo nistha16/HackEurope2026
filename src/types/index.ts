@@ -48,8 +48,8 @@ export interface MarketInsights {
   two_month_high: number;
   two_month_low: number;
   two_month_avg: number;
-  one_year_trend: string;
-  volatility: string;
+  one_year_trend: "UP" | "DOWN";
+  volatility: "HIGH" | "MEDIUM" | "LOW";
 }
 
 export interface PredictionResponse {

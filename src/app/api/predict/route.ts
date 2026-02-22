@@ -68,6 +68,21 @@ export async function POST(request: NextRequest) {
       if (mlResponse.ok) {
         const mlData = await mlResponse.json();
 
+        // Runtime validation: ensure ML response has required fields
+        const validRecommendations = ["SEND_NOW", "WAIT", "NEUTRAL"] as const;
+        if (
+          typeof mlData.timing_score !== "number" ||
+          !validRecommendations.includes(mlData.recommendation) ||
+          typeof mlData.reasoning !== "string" ||
+          !mlData.market_insights ||
+          typeof mlData.market_insights.two_month_high !== "number" ||
+          typeof mlData.market_insights.two_month_low !== "number" ||
+          typeof mlData.market_insights.two_month_avg !== "number"
+        ) {
+          // Malformed ML response → fall through to fallback
+          throw new Error("Invalid ML response shape");
+        }
+
         const prediction: PredictionResponse = {
           current_rate: currentRate,
           timing_score: mlData.timing_score,
