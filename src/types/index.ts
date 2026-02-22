@@ -44,16 +44,21 @@ export interface ComparisonResponse {
   timestamp: string;
 }
 
+export interface MarketInsights {
+  two_month_high: number;
+  two_month_low: number;
+  two_month_avg: number;
+  one_year_trend: "UP" | "DOWN";
+  volatility: "HIGH" | "MEDIUM" | "LOW";
+}
+
 export interface PredictionResponse {
   current_rate: number;
-  predicted_rate_24h: number;
-  predicted_rate_72h: number;
-  confidence: number;
+  timing_score: number;
   recommendation: "SEND_NOW" | "WAIT" | "NEUTRAL";
-  potential_savings: string;
   reasoning: string;
+  market_insights: MarketInsights;
   historical_rates: { date: string; rate: number }[];
-  predicted_rates: { date: string; rate: number }[];
 }
 
 export interface ReceiptScanResult {
