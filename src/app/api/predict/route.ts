@@ -122,10 +122,10 @@ export async function POST(request: NextRequest) {
     let recommendation: "SEND_NOW" | "WAIT" | "NEUTRAL";
     let reasoning: string;
 
-    if (timingScore >= 0.65) {
+    if (timingScore > 0.8) {
       recommendation = "SEND_NOW";
       reasoning = `Good timing — today's rate is higher than ${Math.round(timingScore * 100)}% of days in the past 2 months. (Fallback: ML service unavailable)`;
-    } else if (timingScore >= 0.4) {
+    } else if (timingScore >= 0.5) {
       recommendation = "NEUTRAL";
       reasoning =
         "The rate is near its recent average — no strong signal either way. (Fallback: ML service unavailable)";
