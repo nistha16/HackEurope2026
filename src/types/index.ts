@@ -5,7 +5,6 @@ export interface Provider {
   fee_flat: number;
   fee_percent: number;
   fx_markup_percent: number;
-  speed_hours: number;
   min_amount: number;
   max_amount: number;
   currencies: string[];
