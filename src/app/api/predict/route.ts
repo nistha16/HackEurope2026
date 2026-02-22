@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
             "ML service unavailable and no historical data for this corridor. " +
             "Only ECB-supported currency pairs have a fallback.",
         },
-        { status: 404 }
+        { status: 503 }
       );
     }
 
