@@ -6,7 +6,6 @@ from fastapi.testclient import TestClient
 # Add the parent directory (ml/) to sys.path so we can import main
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from train import EnsembleModel  # noqa: F401 — required for joblib deserialization
 from main import app
 
 # Create a TestClient instance using our FastAPI app

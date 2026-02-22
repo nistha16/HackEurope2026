@@ -11,10 +11,18 @@ Architecture:
 """
 
 import os
+import sys
 import joblib
 import numpy as np
 import pandas as pd
 from features import engineer_features, FEATURE_COLS
+from train import EnsembleModel
+
+# Register EnsembleModel so joblib can unpickle it regardless of entry point
+# (the model was pickled under __main__ via `python3 train.py`)
+for _mod in ("__main__", "__mp_main__"):
+    if _mod in sys.modules:
+        setattr(sys.modules[_mod], "EnsembleModel", EnsembleModel)
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
