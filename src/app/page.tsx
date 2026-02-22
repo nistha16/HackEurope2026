@@ -24,7 +24,7 @@ const STEPS = [
     icon: Search,
     title: "Enter your transfer",
     description:
-      "Choose currencies and amount. We support 20+ currencies across 6 continents.",
+      "Choose currencies and amount. We support 70+ currencies across 6 continents.",
   },
   {
     icon: ShieldCheck,
