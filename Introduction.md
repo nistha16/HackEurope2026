@@ -7,7 +7,7 @@
 **Event:** HackEurope 2026 - Monzo FinTech Track (€1,000)
 
 **Bounties:**
-* Best Use of Claude ($10K)
+
 * Best Stripe Integration (€3K)
 * Best Use of ElevenLabs (AirPods)
 * Best Use of Gemini (€50K credits)
@@ -70,7 +70,6 @@ We are **NOT** a bank. We do **NOT** handle transfers. We compare, users click t
 | Styling | Tailwind CSS + shadcn/ui | Polished UI fast |
 | Database | Supabase (Postgres + Auth) | Users, transfers, providers |
 | ML Service | Python FastAPI | FX prediction model |
-| AI Reasoning | Claude API (Sonnet) | Fee explanation, recommendations |
 | Multimodal | Gemini API | Receipt scanning |
 | Voice | ElevenLabs API | Voice-powered transfers |
 | Payments | Stripe | Process transfer payments |
@@ -141,14 +140,6 @@ def detect_hidden_fees(provider_rate, mid_market_rate, advertised_fee, amount):
 ---
 
 ## API Integrations & Bounty Strategies
-
-### Claude - The Fee Translator
-
-Claude receives raw comparison data and explains it in plain language.
-
-> "Western Union advertises 'zero fees' but their exchange rate is 3.2% worse than the real rate. On your €500 transfer, that's a hidden cost of €16. Wise charges a €3.50 flat fee but uses the real exchange rate - saving you €12.50 total."
-
-**Why this wins "Best Use of Claude":** It performs multi-step reasoning - comparing fee structures, detecting hidden markups, and generating personalized advice. Not just summarization, but genuine financial analysis.
 
 ### Gemini - The Receipt Scanner
 
@@ -261,7 +252,6 @@ src/
 │   │   ├── compare/route.ts              # Comparison engine
 │   │   ├── predict/route.ts              # Calls ML service
 │   │   ├── scan/route.ts                 # Gemini processing
-│   │   ├── explain/route.ts              # Claude explanation
 │   │   ├── voice/route.ts                # ElevenLabs TTS
 │   │   └── stripe/payment/route.ts       # Stripe payment
 ├── components/
@@ -271,7 +261,7 @@ src/
 │   ├── ReceiptScanner.tsx                # Camera + Gemini
 │   └── TransparencyScore.tsx             # A/B/C/F rating badge
 ├── lib/
-│   └── supabase.ts, claude.ts, gemini.ts, stripe.ts
+│   └── supabase.ts, gemini.ts, stripe.ts
 └── data/
     └── providers.json                    # Seeded from World Bank data
 
@@ -289,7 +279,7 @@ ml/
 
 - **Person 1 (P1):** Frontend Lead (React, Tailwind, Recharts, UI/UX, Animations)
 - **Person 2 (P2):** Backend Lead (Next.js APIs, Supabase, Stripe, Gemini, Engine)
-- **Person 3 (P3):** ML & AI Lead (Python, FastAPI, Claude, ElevenLabs, Pitch)
+- **Person 3 (P3):** ML & AI Lead (Python, FastAPI, ElevenLabs, Pitch)
 
 ### Sprint 1: Foundation (Hours 0-12) - "Make it work"
 
@@ -313,8 +303,6 @@ ml/
 
 - [ ] **P3:** Prediction API endpoint (currency pair → send now/wait)
 - [ ] **P1:** Build RatePredictionChart (Recharts) + SendOrWait card
-- [ ] **P3:** Claude API fee explanation endpoint
-- [ ] **P1:** Display Claude explanations on comparison results
 - [ ] **P2:** Stripe Billing: premium subscription flow
 - [ ] **P2:** Stripe Payments: "Lock This Rate" flow
 - [ ] **P2:** Gemini receipt scanner API endpoint
@@ -347,7 +335,7 @@ ml/
 "FibreTransfer is Skyscanner for money transfers. Compare every provider. See every hidden fee. Know exactly when to send."
 
 **0:40-1:30 - Live Demo (Compare):**  
-Type €500, EUR → MAD. Show results. Highlight Western Union's hidden markup vs. Wise. **Show Claude explanation UI**.
+Type €500, EUR → MAD. Show results. Highlight Western Union's hidden markup vs. Wise.
 
 **1:30-2:00 - ML Prediction:**  
 Show prediction chart. "Our ML model trained on 25 years of ECB data predicts... Wait until tomorrow → your mom receives 43 more dirhams."
@@ -369,7 +357,6 @@ Explain affiliate routing + Stripe rate locks. Real data from ECB/World Bank.
 - [ ] Live rates: Frankfurter returns real rate.
 - [ ] Hidden fees: Markup calculated correctly vs mid-market.
 - [ ] Transparency: A-F scores display correctly.
-- [ ] Claude: Fee breakdown generated in plain language.
 - [ ] ML Prediction: "Send Now/Wait" displays.
 - [ ] Gemini Scanner: Upload photo → amount/fees extracted.
 - [ ] ElevenLabs: Audio plays in browser.
