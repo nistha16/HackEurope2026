@@ -61,20 +61,6 @@ export interface PredictionResponse {
   historical_rates: { date: string; rate: number }[];
 }
 
-export interface ReceiptScanResult {
-  provider_name: string;
-  amount_sent: number;
-  currency_sent: string;
-  amount_received: number;
-  currency_received: string;
-  fee_paid: number;
-  rate_used: number;
-  date: string;
-  overpay_amount: number;
-  best_alternative_cost: number;
-  best_alternative_provider: string;
-}
-
 export interface RateAlert {
   id: string;
   source_currency: string;

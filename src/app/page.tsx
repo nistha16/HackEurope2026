@@ -15,7 +15,6 @@ import {
   DollarSign,
   Users,
   BadgePercent,
-  Camera,
   Mic,
 } from "lucide-react";
 
@@ -87,13 +86,6 @@ const FEATURES = [
     description:
       "ML predictions trained on 25 years of ECB data. Know if waiting a day could save you money.",
     href: "/predict",
-  },
-  {
-    icon: Camera,
-    title: "Receipt Scanner",
-    description:
-      "Scan an old transfer receipt with Gemini AI. We show exactly how much you overpaid.",
-    href: "/scan",
   },
   {
     icon: Mic,
