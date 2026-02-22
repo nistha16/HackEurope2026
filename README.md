@@ -1,4 +1,4 @@
-# SendSmart
+# FibreTransfer
 
 **Skyscanner for international money transfers.**
 

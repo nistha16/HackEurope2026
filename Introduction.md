@@ -1,4 +1,4 @@
-# SendSmart - Build Plan
+# FibreTransfer - Build Plan
 
 **Tagline:** "Stop overpaying to send money home."
 
@@ -22,10 +22,10 @@
 
 ## The Concept
 
-SendSmart is the **"Skyscanner for international money transfers."**
+FibreTransfer is the **"Skyscanner for international money transfers."**
 
 ### The Problem
-Sending money abroad costs 6.49% on average in fees (World Bank RPW Q1 2025). On $905B in global remittances (2024), that's **$905B/year in fees** - with banks charging up to 14.55%. There are 20+ providers (Wise, Western Union, Revolut, Remitly, banks) each with different fees and rates. Nobody knows which is cheapest for THEIR specific transfer. If everyone used the cheapest option, the UN estimates families would save $20B+ annually.
+Sending money abroad costs 6.49% on average in fees (World Bank RPW Q1 2025). On $905B in global remittances (2024), that's **$59B/year in fees** - with banks charging up to 14.55%. There are 20+ providers (Wise, Western Union, Revolut, Remitly, banks) each with different fees and rates. Nobody knows which is cheapest for THEIR specific transfer. If everyone used the cheapest option, the UN estimates families would save $20B+ annually.
 
 ### The Solution
 A comparison marketplace. Enter amount + currencies → instantly compare ALL online transfer services → ML predicts if you should send now or wait → AI exposes hidden fees → click through to the best provider's website to send.
@@ -38,7 +38,7 @@ We are **NOT** a bank. We do **NOT** handle transfers. We compare, users click t
 
 **How Credit Karma makes $1.5B/year:** Free credit score → recommend financial products → affiliate commission.
 
-**How SendSmart makes money:** Free comparison → route users to cheapest provider → affiliate commission.
+**How FibreTransfer makes money:** Free comparison → route users to cheapest provider → affiliate commission.
 
 | Revenue Source | Per Event | Market Potential |
 |----------------|-----------|------------------|
@@ -344,7 +344,7 @@ ml/
 "281 million people send money home every year. According to the World Bank, they lose $59 billion to fees... That ends today."
 
 **0:20-0:40 - Intro:**  
-"SendSmart is Skyscanner for money transfers. Compare every provider. See every hidden fee. Know exactly when to send."
+"FibreTransfer is Skyscanner for money transfers. Compare every provider. See every hidden fee. Know exactly when to send."
 
 **0:40-1:30 - Live Demo (Compare):**  
 Type €500, EUR → MAD. Show results. Highlight Western Union's hidden markup vs. Wise. **Show Claude explanation UI**.
@@ -359,7 +359,7 @@ Scan old receipt with Gemini. "Gemini detected... you lost €12.30 in exchange 
 Explain affiliate routing + Stripe rate locks. Real data from ECB/World Bank.
 
 **2:40-3:00 - Impact & Close:**  
-"SendSmart doesn't just save money - it means more arrives home. More food on the table. Because your family deserves every cent."
+"FibreTransfer doesn't just save money - it means more arrives home. More food on the table. Because your family deserves every cent."
 
 ---
 
