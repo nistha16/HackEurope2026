@@ -12,11 +12,6 @@ type Props = {
 export function ProviderRanking({ results, sourceCurrency, targetCurrency, potentialSavings }: Props) {
   if (results.length === 0) return null;
 
-  const fastestHours = results.reduce(
-    (min, r) => Math.min(min, r.provider.speed_hours),
-    Infinity
-  );
-
   const best = results[0];
   const worst = results[results.length - 1];
 
@@ -41,7 +36,6 @@ export function ProviderRanking({ results, sourceCurrency, targetCurrency, poten
             sourceCurrency={sourceCurrency}
             targetCurrency={targetCurrency}
             isBestValue={index === 0}
-            isFastest={result.provider.speed_hours === fastestHours}
           />
         ))}
       </div>

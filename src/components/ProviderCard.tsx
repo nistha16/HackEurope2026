@@ -13,7 +13,6 @@ type Props = {
   sourceCurrency: string;
   targetCurrency: string;
   isBestValue?: boolean;
-  isFastest?: boolean;
 };
 
 function ProviderLogo({ name, websiteUrl }: { name: string; websiteUrl: string }) {
@@ -40,14 +39,6 @@ function ProviderLogo({ name, websiteUrl }: { name: string; websiteUrl: string }
   );
 }
 
-function formatSpeed(hours: number): string {
-  if (hours < 1) return "⚡ Instant";
-  if (hours <= 2) return `⚡ ${hours}h`;
-  if (hours <= 24) return `🕐 ${hours}h`;
-  const days = Math.round(hours / 24);
-  return `🐢 ${days} day${days > 1 ? "s" : ""}`;
-}
-
 function FeeRow({
   label,
   value,
@@ -70,7 +61,6 @@ export function ProviderCard({
   sourceCurrency,
   targetCurrency,
   isBestValue,
-  isFastest,
 }: Props) {
   const [expanded, setExpanded] = React.useState(false);
   const { provider } = result;
@@ -82,19 +72,12 @@ export function ProviderCard({
         isBestValue && "border-green-400 ring-1 ring-green-400"
       )}
     >
-      {/* Badges */}
-      {(isBestValue || isFastest) && (
+      {/* Best Value badge */}
+      {isBestValue && (
         <div className="flex gap-2 mb-3">
-          {isBestValue && (
-            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
-              Best Value
-            </span>
-          )}
-          {isFastest && (
-            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">
-              Fastest
-            </span>
-          )}
+          <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+            Best Value
+          </span>
         </div>
       )}
 
@@ -108,7 +91,6 @@ export function ProviderCard({
               <p className="font-semibold text-gray-900 truncate">{provider.name}</p>
               <TransparencyScore score={result.transparency_score} />
             </div>
-            <p className="text-xs text-muted-foreground">{formatSpeed(provider.speed_hours)}</p>
           </div>
         </div>
 
@@ -132,7 +114,7 @@ export function ProviderCard({
         <span>Rate: {result.provider_rate.toFixed(4)}</span>
       </div>
 
-      {/* Hidden fee alert — self-guards when hiddenCost is 0 */}
+      {/* Hidden fee alert */}
       <HiddenFeeAlert
         hiddenCost={result.hidden_cost}
         markupPercent={provider.fx_markup_percent}

@@ -3,13 +3,14 @@
     "id": "wise",
     "name": "Wise",
     "logo_url": "/logos/wise.svg",
-    "fee_flat": 1.50,
+    "fee_flat": 1.5,
     "fee_percent": 0.4,
     "fx_markup_percent": 0.0,
-    "speed_hours": 24,
     "min_amount": 1,
     "max_amount": 1000000,
-    "currencies": ["*"],
+    "currencies": [
+      "*"
+    ],
     "transparency_score": "A",
     "website_url": "https://wise.com"
   },
@@ -20,10 +21,21 @@
     "fee_flat": 0,
     "fee_percent": 0.3,
     "fx_markup_percent": 0.5,
-    "speed_hours": 4,
     "min_amount": 1,
     "max_amount": 50000,
-    "currencies": ["EUR", "GBP", "USD", "MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "TRY"],
+    "currencies": [
+      "EUR", "GBP",
+      "USD",
+      "MAD",
+      "INR",
+      "PHP",
+      "NGN",
+      "PKR",
+      "BDT",
+      "MXN",
+      "EGP",
+      "TRY"
+    ],
     "transparency_score": "A",
     "website_url": "https://revolut.com"
   },
@@ -31,13 +43,29 @@
     "id": "western-union",
     "name": "Western Union",
     "logo_url": "/logos/wu.svg",
-    "fee_flat": 4.90,
+    "fee_flat": 4.9,
     "fee_percent": 0,
     "fx_markup_percent": 3.5,
-    "speed_hours": 0,
     "min_amount": 1,
     "max_amount": 7500,
-    "currencies": ["EUR", "GBP", "USD", "INR", "PHP", "NGN", "MXN", "BRL", "MAD", "PKR", "BDT", "EGP", "GHS", "KES", "TRY", "ZAR"],
+    "currencies": [
+      "EUR",
+      "GBP",
+      "USD",
+      "INR",
+      "PHP",
+      "NGN",
+      "MXN",
+      "BRL",
+      "MAD",
+      "PKR",
+      "BDT",
+      "EGP",
+      "GHS",
+      "KES",
+      "TRY",
+      "ZAR"
+    ],
     "transparency_score": "D",
     "website_url": "https://westernunion.com"
   },
@@ -48,10 +76,21 @@
     "fee_flat": 2.99,
     "fee_percent": 0,
     "fx_markup_percent": 1.8,
-    "speed_hours": 4,
     "min_amount": 1,
     "max_amount": 10000,
-    "currencies": ["EUR", "GBP", "USD", "MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP"],
+    "currencies": [
+      "EUR",
+      "GBP",
+      "USD",
+      "MAD",
+      "INR",
+      "PHP",
+      "NGN",
+      "PKR",
+      "BDT",
+      "MXN",
+      "EGP"
+    ],
     "transparency_score": "B",
     "website_url": "https://remitly.com"
   },
@@ -62,14 +101,14 @@
     "fee_flat": 0,
     "fee_percent": 5.0,
     "fx_markup_percent": 3.0,
-    "speed_hours": 48,
     "min_amount": 1,
     "max_amount": 60000,
-    "currencies": ["*"],
+    "currencies": [
+      "*"
+    ],
     "transparency_score": "F",
     "website_url": "https://paypal.com"
   },
-
   {
     "id": "worldremit",
     "name": "WorldRemit",
@@ -77,10 +116,23 @@
     "fee_flat": 1.99,
     "fee_percent": 0,
     "fx_markup_percent": 2.0,
-    "speed_hours": 2,
     "min_amount": 1,
     "max_amount": 8000,
-    "currencies": ["EUR", "GBP", "USD", "MAD", "INR", "PHP", "NGN", "PKR", "BDT", "MXN", "EGP", "GHS", "KES"],
+    "currencies": [
+      "EUR",
+      "GBP",
+      "USD",
+      "MAD",
+      "INR",
+      "PHP",
+      "NGN",
+      "PKR",
+      "BDT",
+      "MXN",
+      "EGP",
+      "GHS",
+      "KES"
+    ],
     "transparency_score": "B",
     "website_url": "https://worldremit.com"
   },
@@ -91,10 +143,11 @@
     "fee_flat": 0,
     "fee_percent": 0,
     "fx_markup_percent": 1.0,
-    "speed_hours": 24,
     "min_amount": 1,
     "max_amount": 500000,
-    "currencies": ["*"],
+    "currencies": [
+      "*"
+    ],
     "transparency_score": "B",
     "website_url": "https://xe.com"
   }
