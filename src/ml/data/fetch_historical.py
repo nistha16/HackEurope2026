@@ -17,7 +17,7 @@ API docs: https://frankfurter.dev/
     HUF, IDR, ILS, INR, ISK, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RON,
     SEK, SGD, THB, TRY, USD, ZAR
 
-NOTE: Some corridors used in the SendSmart app (EUR/MAD, EUR/NGN, GBP/PKR,
+NOTE: Some corridors used in the FiberTransfer app (EUR/MAD, EUR/NGN, GBP/PKR,
 EUR/BDT, EUR/EGP, EUR/KES, GBP/GHS) are NOT available on Frankfurter because
 those currencies are not published by the ECB. For ML training we fetch all
 available corridors that overlap with the app's provider data, plus extra
@@ -108,7 +108,7 @@ def _fetch_json(url: str, retries: int = 3) -> Optional[dict]:
                     resp.raise_for_status()
                     return resp.json()
             else:
-                req = urllib.request.Request(url, headers={"User-Agent": "sendsmart-fetcher/1.0"})
+                req = urllib.request.Request(url, headers={"User-Agent": "fibertransfer-fetcher/1.0"})
                 with urllib.request.urlopen(req, timeout=30) as resp:
                     return json.loads(resp.read().decode())
         except Exception as exc:

@@ -86,7 +86,7 @@ export function CompareForm() {
     <form
       onSubmit={onSubmit}
       className="w-full max-w-3xl mx-auto"
-      aria-label="SendSmart comparison form"
+      aria-label="FiberTransfer comparison form"
     >
       <div className="rounded-3xl border bg-background shadow-sm p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:gap-5">

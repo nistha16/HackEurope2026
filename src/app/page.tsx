@@ -76,7 +76,7 @@ export default function Home() {
       <nav className="w-full border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
           <span className="text-lg font-bold tracking-tight">
-            Send<span className="text-emerald-600">Smart</span>
+            Fiber<span className="text-emerald-600">Transfer</span>
           </span>
           <div className="flex items-center gap-4 text-sm">
             <a
@@ -222,7 +222,7 @@ export default function Home() {
           </h2>
           <p className="mt-3 text-zinc-400 max-w-lg mx-auto">
             281 million people send money home every year. On average, 6.49%
-            disappears in fees. SendSmart shows you how to keep more.
+            disappears in fees. FiberTransfer shows you how to keep more.
           </p>
           <a
             href="/compare"
@@ -238,7 +238,7 @@ export default function Home() {
       <footer className="border-t bg-white">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-400">
           <span>
-            Send<span className="text-emerald-600 font-semibold">Smart</span>{" "}
+            Fiber<span className="text-emerald-600 font-semibold">Transfer</span>{" "}
             &mdash; HackEurope 2026
           </span>
           <span>

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SendSmart — Skyscanner for Money Transfers",
+  title: "FiberTransfer — Skyscanner for Money Transfers",
   description: "Compare every transfer provider. See every hidden fee. Know exactly when to send.",
 };
 
