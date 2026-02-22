@@ -1,24 +1,18 @@
-export interface StoredUser {
-  email: string;
-  isPremium: boolean;
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+
+export async function signUp(email: string, password: string): Promise<{ error: string | null }> {
+  const supabase = getSupabaseBrowserClient();
+  const { error } = await supabase.auth.signUp({ email, password });
+  return { error: error?.message ?? null };
 }
 
-const KEY = "ft_user";
-
-export function getUser(): StoredUser | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as StoredUser) : null;
-  } catch {
-    return null;
-  }
+export async function signIn(email: string, password: string): Promise<{ error: string | null }> {
+  const supabase = getSupabaseBrowserClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  return { error: error?.message ?? null };
 }
 
-export function setUser(user: StoredUser): void {
-  localStorage.setItem(KEY, JSON.stringify(user));
-}
-
-export function clearUser(): void {
-  localStorage.removeItem(KEY);
+export async function signOut(): Promise<void> {
+  const supabase = getSupabaseBrowserClient();
+  await supabase.auth.signOut();
 }

@@ -1,31 +1,35 @@
 "use client";
 
 import * as React from "react";
-import { getUser, setUser, clearUser, type StoredUser } from "@/lib/auth";
+import type { User } from "@supabase/supabase-js";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
+import { signUp, signIn, signOut } from "@/lib/auth";
 
 export function useAuth() {
-  const [user, setUserState] = React.useState<StoredUser | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    setUserState(getUser());
+    const supabase = getSupabaseBrowserClient();
+
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  function login(email: string, isPremium = false) {
-    const u: StoredUser = { email, isPremium };
-    setUser(u);
-    setUserState(u);
-  }
-
-  function upgradeToPremium(email: string) {
-    const u: StoredUser = { email, isPremium: true };
-    setUser(u);
-    setUserState(u);
-  }
-
-  function logout() {
-    clearUser();
-    setUserState(null);
-  }
-
-  return { user, login, upgradeToPremium, logout };
+  return {
+    user,
+    loading,
+    isPremium: user?.user_metadata?.isPremium === true,
+    signUp,
+    signIn,
+    logout: signOut,
+  };
 }

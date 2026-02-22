@@ -2,29 +2,50 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { getSupabaseBrowserClient } from "@/lib/supabase";
 
-export default function SubscriptionSuccessPage() {
-  const { user, upgradeToPremium } = useAuth();
-  const [email, setEmail] = React.useState("");
-  const [saved, setSaved] = React.useState(false);
+function SubscriptionSuccessContent() {
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const [status, setStatus] = React.useState<"idle" | "activating" | "done" | "error">("idle");
 
   React.useEffect(() => {
-    if (user) {
-      upgradeToPremium(user.email);
-      setSaved(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!sessionId || !user || status !== "idle") return;
 
-  function handleSave(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!email.trim()) return;
-    upgradeToPremium(email.trim());
-    setSaved(true);
-  }
+    async function activate() {
+      setStatus("activating");
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { setStatus("error"); return; }
+
+        const res = await fetch("/api/stripe/activate-premium", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: sessionId,
+            access_token: session.access_token,
+          }),
+        });
+
+        if (res.ok) {
+          await supabase.auth.refreshSession();
+          setStatus("done");
+        } else {
+          setStatus("error");
+        }
+      } catch {
+        setStatus("error");
+      }
+    }
+
+    activate();
+  }, [user, sessionId, status]);
 
   return (
     <main className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
@@ -32,48 +53,52 @@ export default function SubscriptionSuccessPage() {
         <div className="flex justify-center">
           <CheckCircle2 className="h-14 w-14 text-emerald-500" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Welcome to Premium!
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome to Premium!</h1>
         <p className="text-muted-foreground text-sm">
           Your subscription is active. You now have access to smart timing
-          alerts, full historical charts, receipt scanning, and daily market
-          briefings.
+          alerts, full historical charts, and daily market briefings.
         </p>
 
-        {!saved ? (
-          <form onSubmit={handleSave} className="space-y-3">
+        {!sessionId ? (
+          <p className="text-sm text-red-500">No payment session found.</p>
+        ) : !user ? (
+          <div className="space-y-3">
             <p className="text-sm font-medium text-gray-700">
-              Save your email to access Premium on any device
+              Create an account to activate your Premium badge
             </p>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            />
-            <Button
-              type="submit"
-              className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              Save & continue
+            <p className="text-xs text-zinc-500">
+              Use the email you paid with and set a password — this is how you log back in.
+            </p>
+            <Button asChild className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Link href={`/login?mode=signup&next=${encodeURIComponent(`/subscription/success?session_id=${sessionId}`)}`}>
+                Create account &amp; activate Premium
+              </Link>
             </Button>
-            <Link
-              href="/compare"
-              className="block text-xs text-zinc-400 hover:text-zinc-600"
-            >
+            <p className="text-xs text-zinc-400">Already have an account?{" "}
+              <Link href={`/login?next=${encodeURIComponent(`/subscription/success?session_id=${sessionId}`)}`} className="underline">
+                Sign in
+              </Link>
+            </p>
+            <Link href="/compare" className="block text-xs text-zinc-400 hover:text-zinc-600">
               Continue as guest
             </Link>
-          </form>
+          </div>
+        ) : status === "activating" ? (
+          <p className="text-sm text-zinc-400">Activating your Premium badge...</p>
+        ) : status === "error" ? (
+          <p className="text-sm text-red-500">Could not activate Premium. Please contact support.</p>
         ) : (
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="space-y-3">
+            <div className="flex justify-center">
+              <span className="rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-sm font-semibold ring-1 ring-emerald-300">
+                ★ Premium member
+              </span>
+            </div>
+            <p className="text-sm text-emerald-600 font-medium">
+              Activated for {user.email}
+            </p>
             <Button asChild className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
               <Link href="/compare">Start comparing</Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/compare">Back to Compare</Link>
             </Button>
           </div>
         )}
@@ -83,5 +108,13 @@ export default function SubscriptionSuccessPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function SubscriptionSuccessPage() {
+  return (
+    <React.Suspense>
+      <SubscriptionSuccessContent />
+    </React.Suspense>
   );
 }
