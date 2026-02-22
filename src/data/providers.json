@@ -69,20 +69,7 @@
     "transparency_score": "F",
     "website_url": "https://paypal.com"
   },
-  {
-    "id": "your-bank",
-    "name": "Your Bank",
-    "logo_url": "/logos/bank.svg",
-    "fee_flat": 25.00,
-    "fee_percent": 0,
-    "fx_markup_percent": 4.5,
-    "speed_hours": 72,
-    "min_amount": 1,
-    "max_amount": 100000,
-    "currencies": ["*"],
-    "transparency_score": "F",
-    "website_url": "#"
-  },
+
   {
     "id": "worldremit",
     "name": "WorldRemit",
