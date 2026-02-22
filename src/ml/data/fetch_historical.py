@@ -20,13 +20,25 @@ TARGET_BASES = ["USD", "EUR", "GBP", "AUD", "SGD", "CAD"]
 # Note: Not every exotic OXR currency is available on Yahoo, 
 # but the majors and primary EM corridors are.
 CURRENCIES = [
-    "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "HKD", "NZD", "SEK", 
-    "KRW", "SGD", "NOK", "MXN", "INR", "ZAR", "TRY", "BRL", "TWD", "DKK",
-    "PLN", "THB", "IDR", "HUF", "CZK", "ILS", "CLP", "PHP", "AED", "COP",
-    "SAR", "MYR", "RON", "MAD", "EGP"
+    # Majors / Developed Markets
+    "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "NZD", "SEK", "NOK", "DKK",
+    
+    # Asia & Pacific
+    "CNY", "HKD", "KRW", "SGD", "TWD", "THB", "IDR", "MYR", "PHP", "VND", 
+    "INR", "PKR", "BDT", "LKR",
+    
+    # Middle East & Africa
+    "AED", "SAR", "QAR", "OMR", "BHD", "ILS", "MAD", "EGP", "ZAR", "KES", 
+    "NGN", "GHS", "UGX", "TZS",
+    
+    # Latin America
+    "MXN", "BRL", "CLP", "COP", "ARS", "PEN",
+    
+    # Europe (Non-Euro)
+    "TRY", "PLN", "HUF", "CZK", "RON"
 ]
 
-START_DATE = "1999-01-01" 
+START_DATE = "1999-01-01"
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "historical_rates.csv")
 
