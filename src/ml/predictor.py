@@ -72,36 +72,42 @@ class GlobalPredictor:
         # 5. Signal agreement (for reasoning)
         agreement = float(latest["signal_agreement"])
 
-        # 6. Decision Logic — confidence informed by signal agreement
-        if timing_score >= 0.65:
+        # 6. Decision Logic — Task 2: tuned thresholds & Task 5: Natural reasoning
+        if timing_score > 0.8:
             rec = "SEND_NOW"
             if agreement >= 0.7:
                 reason = (
-                    f"Great timing — today's rate is near the 2-month high and "
-                    f"{int(agreement * 6)}/6 indicators confirm this is a strong day."
+                    f"The {from_curr} to {to_curr} rate is exceptionally favorable right now compared to recent trends. "
+                    f"Locking in your transfer is highly recommended ({int(agreement * 6)}/6 indicators confirm strong momentum)."
                 )
             else:
                 reason = (
-                    f"Good timing — today's rate is above average, though "
-                    f"not all indicators fully agree ({int(agreement * 6)}/6 positive)."
+                    f"The current {from_curr} to {to_curr} exchange rate is very strong. "
+                    f"It's a great time to send money."
                 )
-        elif timing_score >= 0.40:
+        elif timing_score >= 0.5:
             rec = "NEUTRAL"
-            reason = (
-                "Decent day. The rate is near its recent average — "
-                "no strong signal either way."
-            )
+            if timing_score > 0.65:
+                reason = (
+                    f"The {from_curr} to {to_curr} rate is solid. You can send now, "
+                    f"but waiting might yield slight improvements depending on market movement."
+                )
+            else:
+                reason = (
+                    f"The {from_curr} to {to_curr} rate is relatively average right now. "
+                    f"No strong urgency to send immediately unless necessary."
+                )
         else:
             rec = "WAIT"
-            if agreement <= 0.3:
+            if timing_score > 0.3:
                 reason = (
-                    "Below-average rate. Most indicators agree this is a "
-                    "weak day — historical patterns suggest a better window soon."
+                    f"The {from_curr} to {to_curr} rate is dipping below recent averages. "
+                    f"Consider holding off for a few days if your transfer isn't urgent."
                 )
             else:
                 reason = (
-                    "Below-average rate compared to recent weeks. "
-                    "Consider waiting for a better window."
+                    f"The {from_curr} to {to_curr} rate is currently unfavorable. "
+                    f"We strongly suggest waiting for the market to recover before initiating your transfer."
                 )
 
         # 7. Market Insights
@@ -132,9 +138,7 @@ class GlobalPredictor:
             },
         }
 
-
 _predictor = GlobalPredictor()
-
 
 def score_today(from_currency: str, to_currency: str) -> dict:
     corridor_df = _predictor.get_corridor_data(from_currency, to_currency)
