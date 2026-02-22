@@ -1,8 +1,9 @@
 """
 Global Predictor Module
 =======================
-Executes inference using the single global model.
-Blends model probability with the raw percentile for a robust timing score.
+Executes inference using the ensemble model (LogReg + XGBoost).
+Blends model probability with the raw 60-day percentile for robustness.
+Caches historical data in memory at startup for sub-200ms responses.
 """
 
 import os
@@ -12,49 +13,68 @@ import pandas as pd
 from features import engineer_features, FEATURE_COLS
 
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
-# Blending weight: how much the ML model influences the final score
-# vs. the deterministic percentile.  0.6 means 60 % model, 40 % percentile.
-MODEL_WEIGHT = 0.6
+# Blend: 55% model, 45% raw percentile.
+MODEL_WEIGHT = 0.55
 
 
 class GlobalPredictor:
     def __init__(self):
         self.model = self._load_model("global_timing_model.joblib")
+        self._data = self._load_data()
 
     def _load_model(self, filename):
         path = os.path.join(MODEL_DIR, filename)
         return joblib.load(path) if os.path.exists(path) else None
 
+    def _load_data(self):
+        path = os.path.join(DATA_DIR, "historical_rates.csv")
+        if os.path.exists(path):
+            df = pd.read_csv(path)
+            print(f"[GlobalPredictor] Loaded {len(df)} rows from historical_rates.csv")
+            return df
+        print("[GlobalPredictor] WARNING: historical_rates.csv not found")
+        return pd.DataFrame()
+
+    def get_corridor_data(self, from_ccy: str, to_ccy: str) -> pd.DataFrame:
+        """Filter cached data for a specific corridor."""
+        if self._data.empty:
+            return pd.DataFrame()
+        return self._data[
+            (self._data["from_currency"] == from_ccy) &
+            (self._data["to_currency"] == to_ccy)
+        ]
+
     def predict(self, from_curr: str, to_curr: str, history_df: pd.DataFrame) -> dict:
         if self.model is None:
-            return self._mock_response("Model file not found. Run train.py.")
+            raise RuntimeError("Model file not found. Run train.py.")
         if len(history_df) < 60:
-            return self._mock_response("Insufficient history (need >= 60 days).")
+            raise ValueError("Insufficient history (need >= 60 days).")
 
         # 1. Feature Engineering
         eng_df = engineer_features(history_df)
         latest_row = eng_df.iloc[-1]
 
-        # 2. Model probability that sending now is the better choice
+        # 2. Model probability (send_now = class 1)
         X = eng_df.iloc[-1:][FEATURE_COLS]
         model_prob = float(self.model.predict_proba(X)[0][1])
 
-        # 3. Raw percentile — deterministic, always meaningful
+        # 3. Raw percentile
         raw_percentile = float(latest_row["range_position_60d"])
 
         # 4. Blended timing score
         timing_score = MODEL_WEIGHT * model_prob + (1 - MODEL_WEIGHT) * raw_percentile
-        timing_score = np.clip(timing_score, 0.0, 1.0)
+        timing_score = float(np.clip(timing_score, 0.0, 1.0))
 
         # 5. Decision Logic
-        if timing_score >= 0.70:
+        if timing_score >= 0.65:
             rec = "SEND_NOW"
             reason = (
-                f"Great timing — today's rate is in the top {int((1 - timing_score) * 100 + 1)}% "
-                f"of recent history and the model expects it to weaken."
+                f"Great timing — today's rate is better than ~{int(timing_score * 100)}% "
+                f"of expected rates over the next two weeks."
             )
-        elif timing_score >= 0.45:
+        elif timing_score >= 0.40:
             rec = "NEUTRAL"
             reason = "Decent day. The rate is near its recent average — no strong signal either way."
         else:
@@ -68,14 +88,19 @@ class GlobalPredictor:
         last_60 = history_df.tail(60)["rate"]
         two_month_avg = float(last_60.mean())
 
-        last_365 = history_df.tail(365)["rate"] if len(history_df) >= 365 else last_60
-        trend_direction = "UP" if latest_row["rate"] > last_365.mean() else "DOWN"
+        last_avail = history_df.tail(365)["rate"] if len(history_df) >= 365 else last_60
+        trend_direction = "UP" if latest_row["rate"] > last_avail.mean() else "DOWN"
 
         vol_ratio = last_60.std() / max(two_month_avg, 1e-9)
-        vol_label = "HIGH" if vol_ratio > 0.015 else "LOW"
+        if vol_ratio > 0.015:
+            vol_label = "HIGH"
+        elif vol_ratio > 0.008:
+            vol_label = "MEDIUM"
+        else:
+            vol_label = "LOW"
 
         return {
-            "timing_score": round(float(timing_score), 2),
+            "timing_score": round(timing_score, 2),
             "recommendation": rec,
             "reasoning": reason,
             "market_insights": {
@@ -87,24 +112,15 @@ class GlobalPredictor:
             },
         }
 
-    def _mock_response(self, error_msg):
-        return {
-            "timing_score": 0.5,
-            "recommendation": "NEUTRAL",
-            "reasoning": error_msg,
-            "market_insights": {
-                "two_month_high": 0.0,
-                "two_month_low": 0.0,
-                "two_month_avg": 0.0,
-                "one_year_trend": "FLAT",
-                "volatility": "UNKNOWN",
-            },
-        }
-
 
 _predictor = GlobalPredictor()
 
 
-def score_today(from_currency: str, to_currency: str, history_df: pd.DataFrame) -> dict:
-    """Wrapper to safely call the global predictor singleton."""
-    return _predictor.predict(from_currency, to_currency, history_df)
+def score_today(from_currency: str, to_currency: str) -> dict:
+    """Wrapper that fetches corridor data from cache and runs prediction."""
+    corridor_df = _predictor.get_corridor_data(from_currency, to_currency)
+    if corridor_df.empty:
+        raise FileNotFoundError(f"No historical data for {from_currency}/{to_currency}.")
+    if len(corridor_df) < 60:
+        raise ValueError(f"Not enough history for {from_currency}/{to_currency} (have {len(corridor_df)}, need 60).")
+    return _predictor.predict(from_currency, to_currency, corridor_df)
