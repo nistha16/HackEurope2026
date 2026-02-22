@@ -25,7 +25,7 @@
 SendSmart is the **"Skyscanner for international money transfers."**
 
 ### The Problem
-Sending money abroad costs 6.49% on average in fees (World Bank RPW Q1 2025). On $905B in global remittances (2024), that's **$59B/year in fees** - with banks charging up to 14.55%. There are 20+ providers (Wise, Western Union, Revolut, Remitly, banks) each with different fees, rates, and speeds. Nobody knows which is cheapest for THEIR specific transfer. If everyone used the cheapest option, the UN estimates families would save $20B+ annually.
+Sending money abroad costs 6.49% on average in fees (World Bank RPW Q1 2025). On $905B in global remittances (2024), that's **$905B/year in fees** - with banks charging up to 14.55%. There are 20+ providers (Wise, Western Union, Revolut, Remitly, banks) each with different fees and rates. Nobody knows which is cheapest for THEIR specific transfer. If everyone used the cheapest option, the UN estimates families would save $20B+ annually.
 
 ### The Solution
 A comparison marketplace. Enter amount + currencies → instantly compare ALL online transfer services → ML predicts if you should send now or wait → AI exposes hidden fees → click through to the best provider's website to send.
@@ -196,7 +196,6 @@ CREATE TABLE providers (
   fee_flat decimal(10,2) DEFAULT 0,
   fee_percent decimal(5,3) DEFAULT 0,
   fx_markup_percent decimal(5,3) DEFAULT 0,
-  speed_hours int,
   transparency_score text,
   website_url text
 );
